@@ -1,4 +1,4 @@
-// Quizzets frågor direkt i scriptet (du kan lägga till fler)
+// 👇 Dina quizfrågor direkt i koden
 const questions = [
   {
     question: "Vad heter huvudpersonen i 'Die Hard'?",
@@ -20,8 +20,6 @@ const questions = [
 let currentQuestion = 0;
 let score = 0;
 let playerName = "";
-
-// Firebase används från global kontext (från <script type="module"> i index.html)
 
 function startQuiz() {
   playerName = document.getElementById("player-name").value.trim();
@@ -80,7 +78,7 @@ function endQuiz() {
   showLeaderboard();
 }
 
-// 🔥 Spara till Firebase istället för localStorage
+// 🔥 Spara till Firebase
 function saveScore() {
   const leaderboardRef = dbRef(db, "leaderboard");
   dbPush(leaderboardRef, {
@@ -90,7 +88,7 @@ function saveScore() {
   });
 }
 
-// 🔥 Läs leaderboard från Firebase
+// 🔥 Hämta från Firebase och visa topp 5
 function showLeaderboard() {
   const leaderboardRef = dbRef(db, "leaderboard");
 
@@ -117,3 +115,7 @@ function restart() {
   document.getElementById("result-screen").style.display = "none";
   document.getElementById("name-screen").style.display = "block";
 }
+
+// 👇 Gör funktionerna globala så de funkar med onclick i HTML
+window.startQuiz = startQuiz;
+window.restart = restart;
