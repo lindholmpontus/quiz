@@ -1,4 +1,5 @@
 // 👇 Dina quizfrågor direkt i koden
+console.log("HEJ");
 const questions = [
   {
     question: "Vad heter huvudpersonen i 'Die Hard'?",
