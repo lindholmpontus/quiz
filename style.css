@@ -89,3 +89,43 @@ button:hover {
   box-shadow: 0 2px 4px rgba(255,255,255,0.1);
   color: #ddd;
 }
+@media (max-width: 600px) {
+  body {
+    padding: 20px;
+    background-size: cover;
+    background-position: center top;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  input[type="text"] {
+    width: 90%;
+    font-size: 1.1rem;
+  }
+
+  button {
+    width: 90%;
+    font-size: 1.1rem;
+  }
+
+  #question-container {
+    font-size: 1.2rem;
+    padding: 10px;
+  }
+
+  #options-container button {
+    width: 90%;
+    font-size: 1rem;
+  }
+
+  #leaderboard {
+    width: 90%;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
