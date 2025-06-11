@@ -1,13 +1,27 @@
-let questions = [];
+// Quizzets frågor direkt i scriptet (du kan lägga till fler)
+const questions = [
+  {
+    question: "Vad heter huvudpersonen i 'Die Hard'?",
+    options: ["John Rambo", "John McClane", "James Bond", "Ethan Hunt"],
+    answer: "John McClane"
+  },
+  {
+    question: "Vilken dryck passar bäst till en svensexa?",
+    options: ["Mjölk", "Whisky", "Saft", "Soppa"],
+    answer: "Whisky"
+  },
+  {
+    question: "Hur många hål har en standard golfbana?",
+    options: ["9", "12", "18", "20"],
+    answer: "18"
+  }
+];
+
 let currentQuestion = 0;
 let score = 0;
 let playerName = "";
 
-fetch("questions.json")
-  .then(res => res.json())
-  .then(data => {
-    questions = data;
-  });
+// Firebase används från global kontext (från <script type="module"> i index.html)
 
 function startQuiz() {
   playerName = document.getElementById("player-name").value.trim();
@@ -47,7 +61,6 @@ function checkAnswer(selected) {
 
   if (selected === correct) score++;
 
-  // Vänta 1.5 sek innan nästa fråga visas
   setTimeout(() => {
     currentQuestion++;
     if (currentQuestion < questions.length) {
@@ -58,8 +71,6 @@ function checkAnswer(selected) {
   }, 1500);
 }
 
-
-
 function endQuiz() {
   document.getElementById("quiz-screen").style.display = "none";
   document.getElementById("result-screen").style.display = "block";
@@ -69,21 +80,33 @@ function endQuiz() {
   showLeaderboard();
 }
 
+// 🔥 Spara till Firebase istället för localStorage
 function saveScore() {
-  const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  leaderboard.push({ name: playerName, score });
-  leaderboard.sort((a, b) => b.score - a.score);
-  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  const leaderboardRef = dbRef(db, "leaderboard");
+  dbPush(leaderboardRef, {
+    name: playerName,
+    score: score,
+    timestamp: Date.now()
+  });
 }
 
+// 🔥 Läs leaderboard från Firebase
 function showLeaderboard() {
-  const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  const list = document.getElementById("leaderboard");
-  list.innerHTML = "";
-  leaderboard.slice(0, 5).forEach(entry => {
-    const li = document.createElement("li");
-    li.textContent = `${entry.name}: ${entry.score}`;
-    list.appendChild(li);
+  const leaderboardRef = dbRef(db, "leaderboard");
+
+  dbGet(leaderboardRef).then(snapshot => {
+    const data = snapshot.val();
+    const list = document.getElementById("leaderboard");
+    list.innerHTML = "";
+
+    if (data) {
+      const entries = Object.values(data).sort((a, b) => b.score - a.score);
+      entries.slice(0, 5).forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(li);
+      });
+    }
   });
 }
 
