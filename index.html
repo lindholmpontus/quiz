@@ -28,6 +28,31 @@
   <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
 </div>
 
-  <script src="script.js"></script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCikoQhuIvsES78YzwT3tU2b6VW3iY0g8k",
+    authDomain: "quiz-c5eb9.firebaseapp.com",
+    databaseURL: "https://quiz-c5eb9-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "quiz-c5eb9",
+    storageBucket: "quiz-c5eb9.firebasestorage.app",
+    messagingSenderId: "648813241938",
+    appId: "1:648813241938:web:97ff65923f8ea31d7da18b",
+    measurementId: "G-HY3QQN83DR"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.db = db;
+  window.dbRef = ref;
+  window.dbPush = push;
+  window.dbGet = get;
+</script>
+
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
