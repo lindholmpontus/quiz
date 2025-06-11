@@ -1,0 +1,91 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 30px;
+  background-color: #121212;
+  color: #f0f0f0;
+  background-image: url("resources/donnie_darko.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #eeeaec;
+  text-shadow: 0 0 10px #f92672;
+}
+
+input[type="text"] {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  width: 200px;
+  margin-bottom: 10px;
+  background-color: #1a0f13;
+  color: #fff;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #1a0f13;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 4px 10px rgba(231, 227, 230, 0.4);
+}
+
+button:hover {
+  background-color: #ff3c8c;
+}
+
+#question-container {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #ffccff;
+  text-shadow: 0 0 5px #ff0099;
+}
+
+#options-container button {
+  display: block;
+  width: 60%;
+  margin: 10px auto;
+  font-size: 1rem;
+  background-color: #222;
+  border: 1px solid #444;
+  color: #fff;
+}
+
+#options-container button:hover {
+  background-color: #333;
+}
+
+#score {
+  font-size: 1.3rem;
+  margin: 10px 0;
+  font-weight: bold;
+  color: #00ffcc;
+  text-shadow: 0 0 8px #00ffcc;
+}
+
+#leaderboard {
+  list-style: none;
+  padding: 0;
+  margin: 20px auto;
+  max-width: 300px;
+}
+
+#leaderboard li {
+  background-color: #1e1e1e;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+  color: #ddd;
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "question": "Vad heter huvudpersonen i 'Die Hard'?",
+    "options": ["John Rambo", "John McClane", "James Bond", "Ethan Hunt"],
+    "answer": "John McClane"
+  },
+  {
+    "question": "Vilken dryck passar bäst till en svensexa?",
+    "options": ["Mjölk", "Whisky", "Saft", "Soppa"],
+    "answer": "Whisky"
+  },
+  {
+    "question": "Hur många hål har en standard golfbana?",
+    "options": ["9", "12", "18", "20"],
+    "answer": "18"
+  }
+]
