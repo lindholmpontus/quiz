@@ -1,5 +1,4 @@
-// 👇 Dina quizfrågor direkt i koden
-console.log("HEJ");
+// Frågor
 const questions = [
   {
     question: "Vad heter huvudpersonen i 'Die Hard'?",
@@ -21,15 +20,130 @@ const questions = [
 let currentQuestion = 0;
 let score = 0;
 let playerName = "";
+let lobbyId = "";
+let isHost = false;
 
-function startQuiz() {
+function createLobby() {
+  lobbyId = document.getElementById("lobby-id").value.trim();
   playerName = document.getElementById("player-name").value.trim();
-  if (!playerName) return alert("Skriv ditt namn!");
+  if (!lobbyId || !playerName) return alert("Skriv namn och lobby!");
 
-  document.getElementById("name-screen").style.display = "none";
-  document.getElementById("quiz-screen").style.display = "block";
-  showQuestion();
+  isHost = true;
+  document.getElementById("start-button-wrapper").style.display = "block";
+  const lobbyRef = window.dbRef(db, `lobbies/${lobbyId}`);
+
+  window.dbSet(lobbyRef, {
+    host: playerName,
+    started: false
+  }).then(() => {
+    const playersRef = window.dbRef(db, `lobbies/${lobbyId}/players`);
+    window.dbPush(playersRef, { name: playerName });
+
+    document.getElementById("lobby-screen").style.display = "none";
+    document.getElementById("waiting-screen").style.display = "block";
+
+    listenForStart();
+    listenForPlayers();
+    checkIfHost();
+  });
 }
+
+function joinLobby() {
+  lobbyId = document.getElementById("lobby-id").value.trim();
+  playerName = document.getElementById("player-name").value.trim();
+  if (!lobbyId || !playerName) return alert("Skriv namn och lobby!");
+
+  const lobbyRef = window.dbRef(db, `lobbies/${lobbyId}`);
+
+  window.dbGet(lobbyRef).then(snapshot => {
+    if (!snapshot.exists()) {
+      alert("Lobbyn finns inte. Be värden skapa den först.");
+      return;
+    }
+
+    const lobbyData = snapshot.val();
+
+    // 🔐 Kontrollera om användaren är host
+    if (lobbyData.host === playerName) {
+      isHost = true;
+      document.getElementById("start-button-wrapper").style.display = "block";
+    }
+
+    // Lägg till spelaren i listan
+    window.dbPush(window.dbRef(db, `lobbies/${lobbyId}/players`), { name: playerName });
+
+    // Visa vänteskärmen
+    document.getElementById("lobby-screen").style.display = "none";
+    document.getElementById("waiting-screen").style.display = "block";
+
+    listenForStart();
+    listenForPlayers();
+
+  });
+}
+
+
+function checkIfHost() {
+  const hostRef = window.dbRef(db, `lobbies/${lobbyId}/host`);
+  window.dbGet(hostRef).then(snapshot => {
+    const hostName = snapshot.val();
+    if (hostName === playerName) {
+      document.getElementById("start-button-wrapper").style.display = "block";
+    } else {
+      document.getElementById("start-button-wrapper").style.display = "none";
+    }
+  });
+}
+
+function startLobbyQuiz() {
+  const lobbyRef = window.dbRef(db, `lobbies/${lobbyId}/started`);
+  window.dbSet(lobbyRef, true);
+}
+
+function listenForStart() {
+  const startRef = window.dbRef(db, `lobbies/${lobbyId}/started`);
+  window.dbOnValue(startRef, snapshot => {
+    if (snapshot.val() === true) {
+      document.getElementById("waiting-screen").style.display = "none";
+      document.getElementById("quiz-screen").style.display = "block";
+      showQuestion();
+    }
+  });
+}
+
+function listenForPlayers() {
+  const playersRef = window.dbRef(db, `lobbies/${lobbyId}/players`);
+  const listDiv = document.getElementById("player-list");
+
+  // Uppdatera spelarlistan
+  window.dbOnValue(playersRef, snapshot => {
+    const players = snapshot.val();
+    listDiv.innerHTML = "<h3>Spelare i lobbyn:</h3>";
+
+    if (players) {
+      Object.values(players).forEach(player => {
+        const p = document.createElement("p");
+        p.textContent = player.name;
+        listDiv.appendChild(p);
+      });
+    }
+
+    // 🔍 Hämta host och visa startknapp om du är värd
+    const lobbyMetaRef = window.dbRef(db, `lobbies/${lobbyId}/host`);
+    window.dbGet(lobbyMetaRef).then(hostSnapshot => {
+      const hostName = hostSnapshot.val();
+      const startButtonWrapper = document.getElementById("start-button-wrapper");
+
+      if (hostName === playerName) {
+        startButtonWrapper.style.display = "block";
+      } else {
+        startButtonWrapper.style.display = "none";
+      }
+    });
+  });
+}
+
+
 
 function showQuestion() {
   const q = questions[currentQuestion];
@@ -79,21 +193,19 @@ function endQuiz() {
   showLeaderboard();
 }
 
-// 🔥 Spara till Firebase
 function saveScore() {
-  const leaderboardRef = dbRef(db, "leaderboard");
-  dbPush(leaderboardRef, {
+  const leaderboardRef = window.dbRef(db, "leaderboard");
+  window.dbPush(leaderboardRef, {
     name: playerName,
     score: score,
     timestamp: Date.now()
   });
 }
 
-// 🔥 Hämta från Firebase och visa topp 5
 function showLeaderboard() {
-  const leaderboardRef = dbRef(db, "leaderboard");
+  const leaderboardRef = window.dbRef(db, "leaderboard");
 
-  dbGet(leaderboardRef).then(snapshot => {
+  window.dbGet(leaderboardRef).then(snapshot => {
     const data = snapshot.val();
     const list = document.getElementById("leaderboard");
     list.innerHTML = "";
@@ -114,9 +226,11 @@ function restart() {
   score = 0;
   document.getElementById("player-name").value = "";
   document.getElementById("result-screen").style.display = "none";
-  document.getElementById("name-screen").style.display = "block";
+  document.getElementById("lobby-screen").style.display = "block";
 }
 
-// 👇 Gör funktionerna globala så de funkar med onclick i HTML
-window.startQuiz = startQuiz;
+// Globala funktioner
+window.createLobby = createLobby;
+window.joinLobby = joinLobby;
+window.startLobbyQuiz = startLobbyQuiz;
 window.restart = restart;
